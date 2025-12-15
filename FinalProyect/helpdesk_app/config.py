@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-this")
+    SECRET_KEY = os.getenv("SECRET_KEY", "CLAVESREGURADELPROYECTO1234")
     DB_HOST = os.getenv("DB_HOST", "localhost")
     DB_USER = os.getenv("DB_USER", "helpdesk_user")
     DB_PASSWORD = os.getenv("DB_PASSWORD", "helpdesk_password")
