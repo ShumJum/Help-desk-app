@@ -67,19 +67,8 @@ GRANT ALL PRIVILEGES ON helpdesk_db.* TO 'helpdesk_user'@'localhost';
 
 Ejecutar el script SQL completo disponible en `docs/manual_tecnico.md`.
 
-### 5. Configurar variables de entorno
 
-Crear archivo `.env`:
-
-```env
-SECRET_KEY=tu_clave_secreta_aqui
-DB_HOST=localhost
-DB_USER=helpdesk_user
-DB_PASSWORD=helpdesk_password
-DB_NAME=helpdesk_db
-```
-
-### 6. Crear usuario administrador
+### 5. Crear usuario administrador
 
 ```python
 # Generar hash
@@ -92,7 +81,7 @@ INSERT INTO users (name, email, password_hash, role)
 VALUES ('Admin', 'admin@example.com', 'HASH_AQUI', 'ADMIN');
 ```
 
-### 7. Ejecutar la aplicación
+### 6. Ejecutar la aplicación
 
 ```bash
 python app.py
