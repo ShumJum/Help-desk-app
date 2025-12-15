@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% block title %}Ticket #{{ ticket.id }} - Help Desk{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-ticket-detailed"></i> Ticket #{{ ticket.id }}</h2>
+        <a href="{{ url_for('tickets_list') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Tickets
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Ticket Details -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">{{ ticket.title }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-flag"></i> Status:</strong> 
+                                <span class="badge 
+                                    {% if ticket.status == 'OPEN' %}bg-warning text-dark
+                                    {% elif ticket.status == 'IN_PROGRESS' %}bg-info
+                                    {% else %}bg-success{% endif %}" id="ticketStatusBadge">
+                                    {{ ticket.status }}
+                                </span>
+                            </p>
+                            <p><strong><i class="bi bi-exclamation-triangle"></i> Priority:</strong> 
+                                <span class="badge 
+                                    {% if ticket.priority == 'HIGH' %}bg-danger
+                                    {% elif ticket.priority == 'MEDIUM' %}bg-warning text-dark
+                                    {% else %}bg-secondary{% endif %}" id="ticketPriorityBadge">
+                                    {{ ticket.priority }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-person"></i> Created by:</strong> {{ ticket.created_by_name }}</p>
+                            <p><strong><i class="bi bi-person-check"></i> Assigned to:</strong> 
+                                <span id="assignedToName">{{ ticket.assigned_to_name or "Unassigned" }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-calendar"></i> Created:</strong> {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-calendar-check"></i> Updated:</strong> {{ ticket.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h5><i class="bi bi-card-text"></i> Description</h5>
+                    <p class="card-text">{{ ticket.description }}</p>
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-chat-dots"></i> Comments ({{ comments|length }})</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush" id="commentsList">
+                        {% for c in comments %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong><i class="bi bi-person-circle"></i> {{ c.user_name }}</strong>
+                                    <small class="text-muted ms-2">{{ c.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </div>
+                            </div>
+                            <p class="mb-0 mt-2">{{ c.comment }}</p>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item text-muted" id="noCommentsMsg">
+                            <em>No comments yet. Be the first to comment!</em>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <form id="commentForm">
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Add Comment</label>
+                            <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Write your comment here..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="addCommentBtn">
+                            <i class="bi bi-send"></i> Add Comment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar - Update Ticket (Admin/Agent only) -->
+        <div class="col-md-4">
+            {% if session.get("user_role") in ["ADMIN", "AGENT"] %}
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-gear"></i> Update Ticket</h5>
+                </div>
+                <div class="card-body">
+                    <form id="updateTicketForm">
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="OPEN" {% if ticket.status == "OPEN" %}selected{% endif %}>OPEN</option>
+                                <option value="IN_PROGRESS" {% if ticket.status == "IN_PROGRESS" %}selected{% endif %}>IN PROGRESS</option>
+                                <option value="RESOLVED" {% if ticket.status == "RESOLVED" %}selected{% endif %}>RESOLVED</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select name="priority" id="priority" class="form-select">
+                                <option value="LOW" {% if ticket.priority == "LOW" %}selected{% endif %}>LOW</option>
+                                <option value="MEDIUM" {% if ticket.priority == "MEDIUM" %}selected{% endif %}>MEDIUM</option>
+                                <option value="HIGH" {% if ticket.priority == "HIGH" %}selected{% endif %}>HIGH</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assigned_to" class="form-label">Assign to</label>
+                            <select name="assigned_to" id="assigned_to" class="form-select">
+                                <option value="">Unassigned</option>
+                                {% for a in agents %}
+                                <option value="{{ a.id }}" {% if ticket.assigned_to == a.id %}selected{% endif %}>{{ a.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="updateTicketBtn">
+                            <i class="bi bi-check-lg"></i> Update Ticket
+                        </button>
+                    </form>
+                    <div id="updateMessage" class="mt-3" style="display: none;"></div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    var ticketId = {{ ticket.id }};
+    
+    // Update ticket via AJAX (jQuery)
+    $('#updateTicketForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        var data = {
+            status: $('#status').val(),
+            priority: $('#priority').val(),
+            assigned_to: $('#assigned_to').val()
+        };
+        
+        $('#updateTicketBtn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Updating...');
+        
+        $.ajax({
+            url: '/tickets/' + ticketId + '/update-ajax',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(response) {
+                if (response.success) {
+                    // Update badges on the page
+                    var statusClass = 'bg-warning text-dark';
+                    if (data.status === 'IN_PROGRESS') statusClass = 'bg-info';
+                    else if (data.status === 'RESOLVED') statusClass = 'bg-success';
+                    
+                    $('#ticketStatusBadge').removeClass().addClass('badge ' + statusClass).text(data.status);
+                    
+                    var priorityClass = 'bg-secondary';
+                    if (data.priority === 'HIGH') priorityClass = 'bg-danger';
+                    else if (data.priority === 'MEDIUM') priorityClass = 'bg-warning text-dark';
+                    
+                    $('#ticketPriorityBadge').removeClass().addClass('badge ' + priorityClass).text(data.priority);
+                    
+                    // Update assigned to name
+                    var assignedName = $('#assigned_to option:selected').text();
+                    $('#assignedToName').text(assignedName || 'Unassigned');
+                    
+                    $('#updateMessage').removeClass('alert-danger').addClass('alert alert-success').html('<i class="bi bi-check-circle"></i> ' + response.message).show();
+                    setTimeout(function() { $('#updateMessage').fadeOut(); }, 3000);
+                }
+            },
+            error: function() {
+                $('#updateMessage').removeClass('alert-success').addClass('alert alert-danger').html('<i class="bi bi-x-circle"></i> Error updating ticket').show();
+            },
+            complete: function() {
+                $('#updateTicketBtn').prop('disabled', false).html('<i class="bi bi-check-lg"></i> Update Ticket');
+            }
+        });
+    });
+    
+    // Add comment via AJAX (jQuery)
+    $('#commentForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        var comment = $('#comment').val().trim();
+        if (!comment) {
+            alert('Please enter a comment.');
+            return;
+        }
+        
+        $('#addCommentBtn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Adding...');
+        
+        $.ajax({
+            url: '/tickets/' + ticketId + '/comments-ajax',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ comment: comment }),
+            success: function(response) {
+                if (response.success) {
+                    // Remove "no comments" message if present
+                    $('#noCommentsMsg').remove();
+                    
+                    // Add new comment to list
+                    var newComment = '<li class="list-group-item">' +
+                        '<div class="d-flex justify-content-between align-items-start">' +
+                        '<div><strong><i class="bi bi-person-circle"></i> ' + response.comment.user_name + '</strong>' +
+                        '<small class="text-muted ms-2">' + response.comment.created_at + '</small></div></div>' +
+                        '<p class="mb-0 mt-2">' + response.comment.comment + '</p></li>';
+                    
+                    $('#commentsList').append(newComment);
+                    $('#comment').val('');
+                    
+                    // Scroll to new comment
+                    $('html, body').animate({ scrollTop: $('#commentsList li:last').offset().top - 100 }, 500);
+                }
+            },
+            error: function() {
+                alert('Error adding comment. Please try again.');
+            },
+            complete: function() {
+                $('#addCommentBtn').prop('disabled', false).html('<i class="bi bi-send"></i> Add Comment');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

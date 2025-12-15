@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Users - Help Desk{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people"></i> User Management</h2>
+        <span class="badge bg-info fs-6">Total: {{ users|length }} users</span>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% if users %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Created at</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td><strong>{{ u.id }}</strong></td>
+                            <td>
+                                <i class="bi bi-person-circle"></i> {{ u.name }}
+                                {% if u.id == session.get("user_id") %}
+                                <span class="badge bg-primary">You</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ u.email }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if u.role == 'ADMIN' %}bg-danger
+                                    {% elif u.role == 'AGENT' %}bg-warning text-dark
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ u.role }}
+                                </span>
+                            </td>
+                            <td>{{ u.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                {% if u.id != session.get("user_id") %}
+                                <form method="post" action="{{ url_for('user_change_role', user_id=u.id) }}" class="d-inline-flex align-items-center">
+                                    <select name="role" class="form-select form-select-sm me-2" style="width: auto;">
+                                        <option value="USER" {% if u.role == "USER" %}selected{% endif %}>USER</option>
+                                        <option value="AGENT" {% if u.role == "AGENT" %}selected{% endif %}>AGENT</option>
+                                        <option value="ADMIN" {% if u.role == "ADMIN" %}selected{% endif %}>ADMIN</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary me-1" title="Change Role">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                </form>
+                                <form method="post" action="{{ url_for('user_delete', user_id=u.id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete User">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-people display-1 text-muted"></i>
+                <p class="text-muted mt-3">No users found</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Role Legend -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Role Permissions</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <h6><span class="badge bg-danger">ADMIN</span></h6>
+                    <ul class="small">
+                        <li>View all tickets</li>
+                        <li>Manage all users</li>
+                        <li>Change roles</li>
+                        <li>Full system access</li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6><span class="badge bg-warning text-dark">AGENT</span></h6>
+                    <ul class="small">
+                        <li>View assigned/unassigned tickets</li>
+                        <li>Update ticket status</li>
+                        <li>Add comments</li>
+                        <li>Cannot manage users</li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6><span class="badge bg-secondary">USER</span></h6>
+                    <ul class="small">
+                        <li>Create tickets</li>
+                        <li>View own tickets only</li>
+                        <li>Add comments</li>
+                        <li>Cannot update status</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

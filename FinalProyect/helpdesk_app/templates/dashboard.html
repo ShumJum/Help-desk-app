@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Help Desk{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-speedometer2"></i> Dashboard</h2>
+        <span class="badge bg-primary fs-6">{{ session.get("user_role") }}</span>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Tickets</h6>
+                            <h2 class="mb-0">{{ total_tickets }}</h2>
+                        </div>
+                        <i class="bi bi-ticket-detailed display-4 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if session.get("user_role") == "ADMIN" %}
+        <div class="col-md-3">
+            <div class="card text-white bg-info h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Users</h6>
+                            <h2 class="mb-0">{{ total_users }}</h2>
+                        </div>
+                        <i class="bi bi-people display-4 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% for stat in status_stats %}
+        <div class="col-md-3">
+            <div class="card text-white h-100 
+                {% if stat.status == 'OPEN' %}bg-warning
+                {% elif stat.status == 'IN_PROGRESS' %}bg-secondary
+                {% else %}bg-success{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">{{ stat.status }}</h6>
+                            <h2 class="mb-0">{{ stat.count }}</h2>
+                        </div>
+                        <i class="bi 
+                            {% if stat.status == 'OPEN' %}bi-envelope-open
+                            {% elif stat.status == 'IN_PROGRESS' %}bi-hourglass-split
+                            {% else %}bi-check-circle{% endif %} display-4 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row">
+        <!-- Priority Stats -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Tickets by Priority</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for stat in priority_stats %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="badge 
+                                {% if stat.priority == 'HIGH' %}bg-danger
+                                {% elif stat.priority == 'MEDIUM' %}bg-warning
+                                {% else %}bg-success{% endif %}">{{ stat.priority }}</span>
+                            <span class="badge bg-primary rounded-pill">{{ stat.count }}</span>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item text-muted">No tickets yet</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Tickets -->
+        <div class="col-md-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Tickets</h5>
+                    <a href="{{ url_for('ticket_new') }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-lg"></i> New Ticket
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if recent_tickets %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in recent_tickets %}
+                                <tr>
+                                    <td><a href="{{ url_for('ticket_detail', ticket_id=t.id) }}">{{ t.id }}</a></td>
+                                    <td>{{ t.title[:30] }}{% if t.title|length > 30 %}...{% endif %}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if t.status == 'OPEN' %}bg-warning
+                                            {% elif t.status == 'IN_PROGRESS' %}bg-secondary
+                                            {% else %}bg-success{% endif %}">{{ t.status }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if t.priority == 'HIGH' %}bg-danger
+                                            {% elif t.priority == 'MEDIUM' %}bg-warning
+                                            {% else %}bg-success{% endif %}">{{ t.priority }}</span>
+                                    </td>
+                                    <td>{{ t.created_at.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center mb-0">No tickets found</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('tickets_list') }}" class="btn btn-outline-primary btn-sm">View All Tickets</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
