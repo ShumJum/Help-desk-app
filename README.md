@@ -104,14 +104,14 @@ Acceder a: `http://localhost:5000`
 
 | Login | New User | Dashboard | 
 |-------|----------|-----------|
-| ![Login]<img width="1918" height="906" alt="login " src="https://github.com/user-attachments/assets/d515bd18-8d89-4ed3-a45b-ca82e5f6e3e4" />
-( | ![New User]<img width="1919" height="854" alt="new-user" src="https://github.com/user-attachments/assets/9beb50d0-299e-497f-bde9-111ddb70c5ca" />) )
-( | ![Dashboard](<img width="1916" height="912" alt="dashboard" src="https://github.com/user-attachments/assets/b270e7b9-cca2-4a7b-8e88-bef85e31aed1" /> )
+| ![Login]<img width="1918" height="906" alt="login " src="https://github.com/user-attachments/assets/d515bd18-8d89-4ed3-a45b-ca82e5f6e3e4" /> (
+| ![New User]<img width="1919" height="854" alt="new-user" src="https://github.com/user-attachments/assets/9beb50d0-299e-497f-bde9-111ddb70c5ca" /> (
+| ![Dashboard](<img width="1916" height="912" alt="dashboard" src="https://github.com/user-attachments/assets/b270e7b9-cca2-4a7b-8e88-bef85e31aed1" /> 
 
 | Tickets | Detalle |
 |---------|---------|
-| ![New Tickets](<img width="1916" height="911" alt="New-ticket" src="https://github.com/user-attachments/assets/91f9af8e-eade-41bd-9c94-2eaa897c5a3e" />
-(| ![Ticket Detail](<img width="1919" height="909" alt="ticket" src="https://github.com/user-attachments/assets/7bcda1ac-11f5-4ad8-921b-0d89fd82c2fb" /> )
+| ![New Tickets](<img width="1916" height="911" alt="New-ticket" src="https://github.com/user-attachments/assets/91f9af8e-eade-41bd-9c94-2eaa897c5a3e" /> (
+| ![Ticket Detail](<img width="1919" height="909" alt="ticket" src="https://github.com/user-attachments/assets/7bcda1ac-11f5-4ad8-921b-0d89fd82c2fb" /> 
 
 ## 🔐 Roles y Permisos
 
