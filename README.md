@@ -102,7 +102,7 @@ Acceder a: `http://localhost:5000`
 
 ## 📱 Capturas de Pantalla
 
-| Login | Dashboard |
+| Login | New User | Dashboard | 
 |-------|-----------|
 | ![Login]<img width="1918" height="906" alt="login " src="https://github.com/user-attachments/assets/d515bd18-8d89-4ed3-a45b-ca82e5f6e3e4" />
 ) | ![New User]<img width="1919" height="854" alt="new-user" src="https://github.com/user-attachments/assets/9beb50d0-299e-497f-bde9-111ddb70c5ca" />
