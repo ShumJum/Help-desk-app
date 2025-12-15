@@ -33,7 +33,7 @@ Aplicación web full stack para gestión de tickets de soporte técnico. Permite
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/TU_USUARIO/helpdesk-agosto-2025.git
+git clone https://github.com/ShumJum/helpdesk-agosto-2025.git
 cd helpdesk-agosto-2025/helpdesk_app
 ```
 
